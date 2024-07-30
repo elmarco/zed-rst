@@ -1,0 +1,4 @@
+name = "reST"
+grammar = "rst"
+path_suffixes = ["rst"]
+
