@@ -1,4 +1,4 @@
 name = "reST"
 grammar = "rst"
 path_suffixes = ["rst"]
-
+line_comments = [".. "]
