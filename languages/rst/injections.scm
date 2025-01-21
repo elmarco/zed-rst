@@ -1,10 +1,10 @@
-((doctest_block) @content
+((doctest_block) @injection.content
   (#set! language "python"))
 
 ; Directives with nested content without arguments nor options
 ((directive
   name: (type) @_type
-  body: (body) @content)
+  body: (body) @injection.content)
   (#set! language "rst")
   (#any-of? @_type
     "attention" "caution" "danger" "error" "hint" "important" "note" "tip" "warning" "admonition"
@@ -16,7 +16,7 @@
   name: (type) @_type
   body: (body
     (options)
-    (content) @content))
+    (content) @injection.content))
   (#set! language "rst")
   (#any-of? @_type
     "attention" "caution" "danger" "error" "hint" "important" "note" "tip" "warning" "admonition"
@@ -26,7 +26,7 @@
 ((directive
   name: (type) @_type
   body: (body
-    (content) @content))
+    (content) @injection.content))
   (#set! language "rst")
   (#any-of? @_type
     "figure" "topic" "sidebar" "container" "table" "list-table" "class" "role"
@@ -36,34 +36,34 @@
 ((directive
   name: (type) @_type
   body: (body
-    (arguments) @language
-    (content) @content))
+    (arguments) @injection.language
+    (content) @injection.content))
   (#any-of? @_type "raw" "code" "code-block" "sourcecode"))
 
 ((directive
   name: (type) @_type
   body: (body
-    (content) @content))
+    (content) @injection.content))
   (#set! language "latex")
   (#eq? @_type "math"))
 
 ((directive
   name: (type) @_type
   body: (body
-    (content) @content))
+    (content) @injection.content))
   (#set! language "csv")
   (#eq? @_type "csv-table"))
 
 ; Special roles - prefix
 ((interpreted_text
   (role) @_role
-  "interpreted_text" @content)
+  "interpreted_text" @injection.content)
   (#eq? @_role ":math:")
   (#set! language "latex"))
 
 ; Special roles - suffix
 ((interpreted_text
-  "interpreted_text" @content
+  "interpreted_text" @injection.content
   (role) @_role)
   (#eq? @_role ":math:")
   (#set! language "latex"))
