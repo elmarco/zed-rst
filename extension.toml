@@ -1,7 +1,7 @@
 id = "rst"
 name = "reST"
 description = "reST syntax support."
-version = "0.0.2"
+version = "0.0.3"
 schema_version = 1
 authors = ["elmarco", "stsewd"]
 repository = "https://github.com/elmarco/zed-rst"
