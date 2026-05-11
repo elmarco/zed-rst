@@ -2,3 +2,13 @@ name = "reST"
 grammar = "rst"
 path_suffixes = ["rst"]
 
+brackets = [
+    { start = "``", end = "``", close = true, newline = false, not_in = ["comment"] },
+    { start = "`", end = "`", close = true, newline = false, not_in = ["comment"] },
+    { start = "**", end = "**", close = true, newline = false, not_in = ["comment"] },
+    { start = "*", end = "*", close = true, newline = false, not_in = ["comment"] },
+    { start = "(", end = ")", close = true, newline = false },
+    { start = "[", end = "]", close = true, newline = false },
+    { start = "\"", end = "\"", close = true, newline = false, not_in = ["comment"] },
+]
+
