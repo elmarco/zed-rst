@@ -1,3 +1,5 @@
+use zed::settings::LspSettings;
+use zed::serde_json;
 use zed::LanguageServerId;
 use zed_extension_api::{self as zed, Result};
 
@@ -152,6 +154,17 @@ impl zed::Extension for RstExtension {
             args,
             env: Default::default(),
         })
+    }
+
+    fn language_server_workspace_configuration(
+        &mut self,
+        _language_server_id: &LanguageServerId,
+        worktree: &zed::Worktree,
+    ) -> Result<Option<serde_json::Value>> {
+        let settings = LspSettings::for_worktree("esbonio", worktree)
+            .ok()
+            .and_then(|s| s.settings);
+        Ok(settings)
     }
 }
 
