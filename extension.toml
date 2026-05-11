@@ -13,6 +13,7 @@ commit = "3a5e5468274d42e2f77163018170a78f7d11c2cc"
 [language_servers.esbonio]
 name = "Esbonio"
 language = "reST"
+language_ids = { "reST" = "rst" }
 
 # esbonio --version (version detection)
 [[capabilities]]
