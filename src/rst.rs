@@ -31,7 +31,7 @@ impl zed::Extension for RstExtension {
     ) -> Result<zed::Command> {
         Ok(zed::Command {
             command: self.language_server_binary_path(language_server_id, worktree)?,
-            args: vec![],
+            args: vec!["server".to_string()],
             env: Default::default(),
         })
     }
