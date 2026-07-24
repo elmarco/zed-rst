@@ -1,7 +1,75 @@
+use zed::lsp::{Completion, CompletionKind, Symbol, SymbolKind};
 use zed::serde_json;
 use zed::settings::LspSettings;
-use zed::LanguageServerId;
+use zed::{CodeLabel, CodeLabelSpan, LanguageServerId};
 use zed_extension_api::{self as zed, Result};
+
+const BUILTIN_DIRECTIVES: &[&str] = &[
+    "attention",
+    "caution",
+    "danger",
+    "error",
+    "hint",
+    "important",
+    "note",
+    "tip",
+    "warning",
+    "admonition",
+    "image",
+    "figure",
+    "topic",
+    "sidebar",
+    "line-block",
+    "parsed-literal",
+    "code",
+    "math",
+    "rubric",
+    "epigraph",
+    "highlights",
+    "pull-quote",
+    "compound",
+    "container",
+    "table",
+    "csv-table",
+    "list-table",
+    "contents",
+    "sectnum",
+    "section-numbering",
+    "header",
+    "footer",
+    "target-notes",
+    "meta",
+    "replace",
+    "unicode",
+    "date",
+    "raw",
+    "class",
+    "role",
+    "default-role",
+    "title",
+    "restructuredtext-test-directive",
+    "include",
+];
+
+const BUILTIN_ROLES: &[&str] = &[
+    "emphasis",
+    "literal",
+    "code",
+    "math",
+    "pep-reference",
+    "PEP",
+    "rfc-reference",
+    "RFC",
+    "strong",
+    "subscript",
+    "sub",
+    "superscript",
+    "sup",
+    "title-reference",
+    "title",
+    "t",
+    "raw",
+];
 
 struct RstExtension {
     cached_binary_path: Option<String>,
@@ -166,6 +234,81 @@ impl zed::Extension for RstExtension {
             .ok()
             .and_then(|s| s.settings);
         Ok(settings)
+    }
+
+    fn label_for_completion(
+        &self,
+        _language_server_id: &LanguageServerId,
+        completion: Completion,
+    ) -> Option<CodeLabel> {
+        let label = &completion.label;
+        match completion.kind? {
+            CompletionKind::Class => {
+                let highlight = if BUILTIN_DIRECTIVES.contains(&label.as_str()) {
+                    "function.builtin"
+                } else {
+                    "function"
+                };
+                let prefix = ".. ";
+                let suffix = "::";
+                Some(CodeLabel {
+                    spans: vec![
+                        CodeLabelSpan::literal(prefix, Some("punctuation.special".into())),
+                        CodeLabelSpan::literal(label, Some(highlight.into())),
+                        CodeLabelSpan::literal(suffix, Some("punctuation.special".into())),
+                    ],
+                    filter_range: (prefix.len()..prefix.len() + label.len()).into(),
+                    code: String::new(),
+                })
+            }
+            CompletionKind::Function => {
+                let highlight = if BUILTIN_ROLES.contains(&label.as_str()) {
+                    "function.builtin"
+                } else {
+                    "function"
+                };
+                let colon = ":";
+                Some(CodeLabel {
+                    spans: vec![
+                        CodeLabelSpan::literal(colon, Some("punctuation.special".into())),
+                        CodeLabelSpan::literal(label, Some(highlight.into())),
+                        CodeLabelSpan::literal(colon, Some("punctuation.special".into())),
+                    ],
+                    filter_range: (colon.len()..colon.len() + label.len()).into(),
+                    code: String::new(),
+                })
+            }
+            _ => None,
+        }
+    }
+
+    fn label_for_symbol(
+        &self,
+        _language_server_id: &LanguageServerId,
+        symbol: Symbol,
+    ) -> Option<CodeLabel> {
+        let name = &symbol.name;
+        match symbol.kind {
+            SymbolKind::String => Some(CodeLabel {
+                filter_range: (0..name.len()).into(),
+                spans: vec![CodeLabelSpan::literal(name, Some("title".into()))],
+                code: String::new(),
+            }),
+            SymbolKind::Class => {
+                let prefix = ".. ";
+                let suffix = "::";
+                Some(CodeLabel {
+                    spans: vec![
+                        CodeLabelSpan::literal(prefix, Some("punctuation.special".into())),
+                        CodeLabelSpan::literal(name, Some("function".into())),
+                        CodeLabelSpan::literal(suffix, Some("punctuation.special".into())),
+                    ],
+                    filter_range: (prefix.len()..prefix.len() + name.len()).into(),
+                    code: String::new(),
+                })
+            }
+            _ => None,
+        }
     }
 }
 
