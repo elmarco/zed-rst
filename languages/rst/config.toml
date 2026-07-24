@@ -1,6 +1,7 @@
 name = "reST"
 grammar = "rst"
 path_suffixes = ["rst"]
+line_comments = [".. "]
 
 brackets = [
     { start = "``", end = "``", close = true, newline = false, not_in = ["comment"] },
