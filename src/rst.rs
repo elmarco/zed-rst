@@ -1,5 +1,5 @@
-use zed::settings::LspSettings;
 use zed::serde_json;
+use zed::settings::LspSettings;
 use zed::LanguageServerId;
 use zed_extension_api::{self as zed, Result};
 
@@ -29,7 +29,8 @@ impl RstExtension {
         // worktree.which() may not find esbonio if it's not on the worktree PATH.
         // Ask pipx/uv for their bin directory and construct the full path.
         if worktree.which("pipx").is_some() {
-            if let Some(bin_dir) = run_cmd("pipx", &["environment", "--value", "PIPX_BIN_DIR"], &env)
+            if let Some(bin_dir) =
+                run_cmd("pipx", &["environment", "--value", "PIPX_BIN_DIR"], &env)
             {
                 let path = format!("{}/esbonio", bin_dir);
                 if run_cmd(&path, &["--version"], &env).is_some() {
