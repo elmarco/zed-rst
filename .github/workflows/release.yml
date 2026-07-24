@@ -4,14 +4,13 @@ on:
       - 'v*'
 
 jobs:
-  homebrew:
+  release:
     name: Release Zed Extension
     runs-on: ubuntu-latest
     steps:
-      - uses: huacnlee/zed-extension-action@v1
+      - uses: huacnlee/zed-extension-action@v2
         with:
-          extension-name: zed-rst
-          extension-path: extensions/rst
+          extension-name: rst
           push-to: elmarco/zed-extensions
         env:
           # the personal access token should have "repo" & "workflow" scopes
