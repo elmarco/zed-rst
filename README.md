@@ -11,6 +11,21 @@ the top of the list when you search. Find it and install it.
 This plugin has an external dependency on the [Esbonio](https://docs.esbon.io/)
 language server, which you can get with `pipx install esbonio`.
 
+To have the extension automatically install and update esbonio via `pipx` or
+`uv`, enable the `install` setting in your Zed settings:
+
+```json
+{
+  "lsp": {
+    "esbonio": {
+      "settings": {
+        "install": true
+      }
+    }
+  }
+}
+```
+
 Esbonio requires Sphinx (and any theme/extensions used by your project) to be
 available in its Python environment. If installed via pipx, inject them:
 
