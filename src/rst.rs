@@ -89,6 +89,14 @@ fn run_cmd(program: &str, args: &[&str], env: &zed::EnvVars) -> Option<String> {
 }
 
 impl RstExtension {
+    fn auto_install_enabled(worktree: &zed::Worktree) -> bool {
+        LspSettings::for_worktree("esbonio", worktree)
+            .ok()
+            .and_then(|s| s.settings)
+            .and_then(|s| s.get("install")?.as_bool())
+            .unwrap_or(false)
+    }
+
     fn find_esbonio(&self, worktree: &zed::Worktree) -> Option<String> {
         if let Some(path) = worktree.which("esbonio") {
             return Some(path);
@@ -125,6 +133,20 @@ impl RstExtension {
         if let Some(path) = self.find_esbonio(worktree) {
             self.cached_binary_path = Some(path.clone());
             return Ok(path);
+        }
+
+        if !Self::auto_install_enabled(worktree) {
+            zed::set_language_server_installation_status(
+                language_server_id,
+                &zed::LanguageServerInstallationStatus::Failed(
+                    "esbonio not found. Install it with: pipx install esbonio".to_string(),
+                ),
+            );
+            return Err(
+                "esbonio is not installed. Install it with: pipx install esbonio\n\
+                 Or enable auto-install in settings: {\"lsp\": {\"esbonio\": {\"settings\": {\"install\": true}}}}"
+                    .to_string(),
+            );
         }
 
         let env = worktree.shell_env();
@@ -204,7 +226,9 @@ impl zed::Extension for RstExtension {
         );
 
         let binary_path = self.ensure_esbonio_installed(language_server_id, worktree)?;
-        self.check_for_updates(worktree);
+        if Self::auto_install_enabled(worktree) {
+            self.check_for_updates(worktree);
+        }
 
         let env = worktree.shell_env();
         let args = match self.esbonio_major_version(&binary_path, &env) {
